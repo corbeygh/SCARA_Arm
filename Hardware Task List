@@ -1,0 +1,35 @@
+Complete derivation of direct kinematic equations for arm 
+5% COMPLETE
+
+Complete derivation of inverse kinematic equations for arm 
+5% (ONGOING)
+
+Implement kinematic equations for arm in Java model of arm 
+10% (ONGOING)
+
+Estimate reach zone for given arm dimensions and motor positions (a rectangular approximation will be sufficient to start with)
+5% (INCOMPLETE)
+
+Draw a straight horizontal line across the page (You will be assessed on how straight the line is)
+10% (INCOMPLETE)
+
+Draw a square with sides 40mm in length (You will be assessed on how close the start and end points are)
+10% (INCOMPLETE)
+
+Draw a circle with a diameter of 50mm (You will be assessed on how smooth the curve is)
+10% (INCOMPLETE)
+ 
+Implement checks in code that avoids singularity locations
+10% (INCOMPLETE)
+
+Implement a button in the Java GUI that transfers a text file to the arm
+5% (INCOMPLETE)
+
+Write the word - Skynet - using the arm
+10% (INCOMPLETE)
+
+Draw the unicode snowman.
+10 % (INCOMPLETE)
+
+Draw a picture of Elf as found on assignment web-page.
+10 % (INCOMPLETE)
