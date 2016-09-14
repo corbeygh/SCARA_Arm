@@ -5,9 +5,9 @@ Complete derivation of inverse kinematic equations for arm
 5% (ONGOING)
 
 Implement kinematic equations for arm in Java model of arm 
-10% (INCOMPLETE)
+10% (ONGOING)
 
-Estimate reach zone for given arm dimensions and motor positions (a rectangular approximation will be sucient to start with)
+Estimate reach zone for given arm dimensions and motor positions (a rectangular approximation will be sufficient to start with)
 5% (INCOMPLETE)
 
 Draw a straight horizontal line across the page (You will be assessed on how straight the line is)
