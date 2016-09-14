@@ -10,8 +10,7 @@
  * @Arthur Roberts
  * @1000000.0
  */
-import ToWebSite.Drawing;
-import ToWebSite.PointXY;
+
 import ecs100.UI;
 import java.util.*;
 import java.io.BufferedWriter;

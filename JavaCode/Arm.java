@@ -16,10 +16,10 @@ public class Arm
 {
 
     // fixed arm parameters
-    private int xm1 = 287;  // coordinates of the motor(measured in pixels of the picture)
-    private int ym1 = 374;
-    private int xm2 = 377;
-    private int ym2 = 374;
+    private final int xm1 = 287;  // coordinates of the motor(measured in pixels of the picture)
+    private final int ym1 = 374;
+    private final int xm2 = 377;
+    private final int ym2 = 374;
     private double r = 154;  // length of the upper/fore arm
     // parameters of servo motors - linear function pwm(angle)
     // each of two motors has unique function which should be measured
@@ -47,8 +47,12 @@ public class Arm
     private double yj1;
     private double xj2;
     private double yj2;
+
     private double xt;     // position of the tool
     private double yt;
+    private double xt2;
+    private double yt2;
+
     private boolean valid_state; // is state of the arm physically possible?
 
     /**
@@ -56,11 +60,6 @@ public class Arm
      */
     public Arm()
     {
-        xm1 = 290; // set motor coordinates
-        ym1 = 372;
-        xm2 = 379;
-        ym2 = 374;
-        r = 156.0;
         theta1 = -90.0*Math.PI/180.0; // initial angles of the upper arms
         theta2 = -90.0*Math.PI/180.0;
         valid_state = false;
@@ -131,21 +130,21 @@ public class Arm
         if (d<2*r){
             valid_state = true;
             // half distance between tool positions
-            //double  h = ...;
-            //double alpha= ...;
-            // tool position
-            // double xt = ...;
-            // double yt = ...;
-            //  xt2 = xa - h.*cos(alpha-pi/2);
-            //  yt2 = ya - h.*sin(alpha-pi/2);
+            double  h = Math.sqrt( (r*r) - Math.pow((0.5*d),2) );
+            double alpha= Math.atan( (yj1-yj2) / (xj2-xj1) );
+            //tool position
+            xt = xa + h * Math.cos((Math.PI/2) - alpha);
+            yt = ya + h * Math.sin((Math.PI/2) - alpha);
+            xt2 = xa - h*Math.cos(Math.PI/2 - alpha); //xt2 = xa - h*Math.cos(alpha-Math.PI/2);
+            yt2 = ya - h*Math.sin(Math.PI/2 - alpha); // yt2 = ya - h*Math.sin(alpha-Math.PI/2);
         } else {
             valid_state = false;
         }
 
     }
 
-    // motor angles from tool position
-    // updetes variables of the class
+     //motor angles from tool position
+     //updates variables of the class
     public void inverseKinematic(double xt_new,double yt_new){
 
         valid_state = true;
@@ -154,8 +153,8 @@ public class Arm
         valid_state = true;
         double dx1 = xt - xm1;
         double dy1 = yt - ym1;
-        // distance between pem and motor
-        double d1 = ...;
+        // distance between pwm and motor
+        double d1 = ; // 20 micro seconds (2e-5)
         if (d1>2*r){
             //UI.println("Arm 1 - can not reach");
             valid_state = false;
@@ -178,21 +177,21 @@ public class Arm
         // theta12 = atan2(yj12 - ym1,xj12-xm1);
         double dx2 = xt - xm2;
         double dy2 = yt - ym2;
-        double d2 = ...;
-        if (d2>2*r){
+        double d2 =  ;
+        //if (d2>2*r){
             // UI.println("Arm 2 - can not reach");
             valid_state = false;
             return;
-        }
+        //}
 
         double l2 = d2/2;
 
         double h2 = Math.sqrt(r*r - d2*d2/4);
         // elbows positions
-        xj2 = ...;
-        yj2 = ...;
+        //xj2 = ...;
+        //yj2 = ...;
         // motor angles for both 1st elbow positions
-        theta2 = ...;
+        //theta2 = ...;
         if ((theta2>0)||(theta2<-Math.PI)){
             valid_state = false;
             //UI.println("Ange 2 -invalid");
