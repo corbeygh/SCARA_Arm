@@ -6,9 +6,6 @@
  * ID:
  */
 
-
-import ToWebSite.Drawing;
-import ToWebSite.PointXY;
 import ecs100.*;
 import java.util.*;
 import java.io.*;
