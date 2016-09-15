@@ -1,6 +1,5 @@
 
 
-
 /**
  * Class represents SCARA robotic arm.
  *
@@ -39,7 +38,6 @@ public class Arm
     private double pwm2_val_2;
     private double theta2_val_2;
 
-
     // current state of the arm
     private double theta1; // angle of the upper arm
     private double theta2;
@@ -48,7 +46,7 @@ public class Arm
     private double yj1;
     private double xj12;
     private double yj12;
-    
+
     private double xj2;
     private double yj2;
     private double xj22;
@@ -74,14 +72,15 @@ public class Arm
     // draws arm on the canvas
     public void draw()
     {
+        UI.clearGraphics();
         // draw arm
         int height = UI.getCanvasHeight();
         int width = UI.getCanvasWidth();
         // calculate joint positions
-        xj1 = XM1 + r*Math.cos(theta1);
-        yj1 = YM1 + r*Math.sin(theta1);
-        xj2 = XM2 + r*Math.cos(theta2);
-        yj2 = YM2 + r*Math.sin(theta2);
+        //xj1 = XM1 + R*Math.cos(theta1);
+        //yj1 = YM1 + R*Math.sin(theta1);
+        //xj2 = XM2 + R*Math.cos(theta2);
+        //yj2 = YM2 + R*Math.sin(theta2);
 
         //draw motors and write angles
         int mr = 20;
@@ -126,7 +125,9 @@ public class Arm
 
     // calculate tool position from motor angles
     // updates variable in the class
-    public void directKinematic(double theta1, double theta2){
+    public void directKinematic(double t1, double t2){
+        theta1 = Math.toRadians(t1);
+        theta2 = Math.toRadians(t2);
         xj1 = XM1 + R*Math.cos(theta1);
         yj1 = YM1 + R*Math.sin(theta1);
         xj2 = XM2 + R*Math.cos(theta2);
@@ -136,24 +137,27 @@ public class Arm
         double  ya = (yj2-yj1)/2 ;
         // distance between joints
         double d = Math.sqrt( (xa*xa) + (ya*ya) );
-        if (d<2*r){
-            valid_state = true;
-            // half distance between tool positions
-            double  h = Math.sqrt( (r*r) - Math.pow((0.5*d),2) );
-            double alpha= Math.atan( (yj1-yj2) / (xj2-xj1) );
-            //tool position
-            xt = xa + h * Math.cos((Math.PI/2) - alpha);
-            yt = ya + h * Math.sin((Math.PI/2) - alpha);
-            xt2 = xa - h*Math.cos(Math.PI/2 - alpha); //xt2 = xa - h*Math.cos(alpha-Math.PI/2);
-            yt2 = ya - h*Math.sin(Math.PI/2 - alpha); // yt2 = ya - h*Math.sin(alpha-Math.PI/2);
-        } else {
-            valid_state = false;
-        }
-
+        //if (d<2*R){
+        valid_state = true;
+        // half distance between tool positions
+        double  h = Math.sqrt( (R*R) - Math.pow((0.5*d),2) );
+        double alpha = Math.atan2(yj1-yj2,xj2-xj1);
+        
+        UI.println("ALPHA:"+alpha);
+        //tool position
+        xt = xa + h * Math.cos((Math.PI/2) - alpha);
+        yt = ya + h * Math.sin((Math.PI/2) - alpha);
+        UI.println(xt);
+        UI.println(yt);
+        xt2 = xa - h*Math.cos(Math.PI/2 - alpha);
+        yt2 = ya - h*Math.sin(Math.PI/2 - alpha); 
+        //} else {
+        //    valid_state = false;
     }
 
-     //motor angles from tool position
-     //updates variables of the class
+
+    //motor angles from tool position
+    //updates variables of the class
     public void inverseKinematic(double xt_new,double yt_new){
 
         valid_state = true;
@@ -162,44 +166,43 @@ public class Arm
         // distance between pwm and motor
         double d1 = (Math.sqrt(Math.pow(xt-XM1,2) + Math.pow(yt-YM1,2)))/2; //Half distance from t to M1 for trig
         double d2 = (Math.sqrt(Math.pow(XM2-xt,2) + Math.pow(YM2-yt,2)))/2;
-        double h1 = Math.sqrt(Math.pow(R),2) - Math.pow(d1,2));
-        double h2 = Math.sqrt(Math.pow(R),2) - Math.pow(d2,2));
-        
+        double h1 = Math.sqrt(Math.pow(R,2) - Math.pow(d1,2));
+        double h2 = Math.sqrt(Math.pow(R,2) - Math.pow(d2,2));
+
         double xa1 = XM1 + (xt-XM1)/2;
         double ya1 = YM1 + (yt-YM1)/2;
         double xa2 = xt + (XM2-xt)/2;
         double ya2 = yt + (YM2-yt)/2;
-        
+
         double alpha1 = Math.atan((yt-YM1)/(xt-XM1));
         double alpha2 = Math.atan((yt-YM2)/(XM2-xt));
-        
+
         xj1 = xa1 - h1*Math.cos(Math.PI/2-alpha1);
         yj1 = ya1 - h1*Math.sin(Math.PI/2-alpha1);
         xj12 = xa1 + h1*Math.cos(Math.PI/2-alpha1);
         yj12 = ya1 + h1*Math.sin(Math.PI/2-alpha1);
-        
+
         xj2 = xa2 - h2*Math.cos(Math.PI/2-alpha2);
         yj2 = ya2 - h2*Math.sin(Math.PI/2-alpha2);
         xj22 = xa2 + h2*Math.cos(Math.PI/2-alpha2);
         yj22 = ya2 + h2*Math.sin(Math.PI/2-alpha2);
-        
+
         if (xj1 == XM1){
             theta1 = 90;
         } else {
-            theta1 = (xj1 < XM1) ? 180-Math.toDegrees(Math.asin((yj1-YM1)/R)) : Math.toDegrees(Math.asin((yj1-YM1)/R);
+            theta1 = (xj1 < XM1) ? 180-Math.toDegrees(Math.asin((yj1-YM1)/R)) : Math.toDegrees(Math.asin((yj1-YM1)/R));
         }
         if (xj2 == XM2){
             theta2 = 90;
         } else {
-            theta2 = (xj2 < XM2) ? 180-Math.toDegrees(Math.asin((yj2-YM2)/R)) : Math.toDegrees(Math.asin((yj2-YM2)/R);
+            theta2 = (xj2 < XM2) ? 180-Math.toDegrees(Math.asin((yj2-YM2)/R)) : Math.toDegrees(Math.asin((yj2-YM2)/R));
         }
-        
-        if (d1>2*r){
+
+        if (d1>2*R){
             valid_state = false;
             return;
         }
-        
-        
+
         //double l1 = d1/2;
         //double h1 = Math.sqrt(r*r - d1*d1/4);
         // elbows positions
@@ -218,9 +221,9 @@ public class Arm
         //double dy2 = yt - YM2;
         //double d2 =  ;
         //if (d2>2*r){
-            // UI.println("Arm 2 - can not reach");
-            //valid_state = false;
-            //return;
+        // UI.println("Arm 2 - can not reach");
+        //valid_state = false;
+        //return;
         //}
 
         //double l2 = d2/2;
@@ -232,9 +235,9 @@ public class Arm
         // motor angles for both 1st elbow positions
         //theta2 = ...;
         //if ((theta2>0)||(theta2<-Math.PI)){
-            //valid_state = false;
-            //UI.println("Ange 2 -invalid");
-            //return;
+        //valid_state = false;
+        //UI.println("Ange 2 -invalid");
+        //return;
         //}
 
         //UI.printf("xt:%3.1f, yt:%3.1f\n",xt,yt);
