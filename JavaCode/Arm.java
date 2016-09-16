@@ -146,7 +146,7 @@ public class Arm
         
         // half distance between tool positions
         double  h = Math.sqrt( (R*R) - Math.pow((0.5*d),2) );
-        double alpha = (yj1 < yj2) ? Math.atan((yj1-yj2)/Math.abs(xj2-xj1)): Math.atan((yj2-yj1)/Math.abs(xj2-xj1));
+        double alpha = Math.atan(Math.abs((yj1-yj2)/(xj2-xj1))*-1);
         
         // Valid Case
         valid_state = true;
@@ -166,7 +166,6 @@ public class Arm
     //motor angles from tool position
     //updates variables of the class
     public void inverseKinematic(double xt_new,double yt_new){
-
         valid_state = true;
         xt = xt_new;
         yt = yt_new;
@@ -180,14 +179,15 @@ public class Arm
         double ya1 = YM1 + (yt-YM1)/2;
         double xa2 = xt + (XM2-xt)/2;
         double ya2 = yt + (YM2-yt)/2;
-
-        double alpha1 = Math.atan((yt-YM1)/(xt-XM1));
-        double alpha2 = Math.atan((yt-YM2)/(XM2-xt));
+        
+        double alpha1 = Math.atan((YM1-yt)/(xt-XM1));
+        double alpha2 = Math.atan((YM2-yt)/(xt-XM2));
 
         xj1 = xa1 - h1*Math.cos(Math.PI/2-alpha1);
         yj1 = ya1 - h1*Math.sin(Math.PI/2-alpha1);
         xj12 = xa1 + h1*Math.cos(Math.PI/2-alpha1);
         yj12 = ya1 + h1*Math.sin(Math.PI/2-alpha1);
+        
 
         xj2 = xa2 - h2*Math.cos(Math.PI/2-alpha2);
         yj2 = ya2 - h2*Math.sin(Math.PI/2-alpha2);
@@ -206,7 +206,7 @@ public class Arm
         }
 
         if (d1>2*R){
-            valid_state = false;
+            //valid_state = false;
             return;
         }
 
@@ -218,7 +218,7 @@ public class Arm
 
         ///theta1 = ...;
         if ((theta1>0)||(theta1<-Math.PI)){
-            valid_state = false;
+            //valid_state = false;
             //UI.println("Ange 1 -invalid");
             return;
         }
