@@ -72,7 +72,6 @@ public class Arm
     // draws arm on the canvas
     public void draw()
     {
-        UI.clearGraphics();
         // draw arm
         int height = UI.getCanvasHeight();
         int width = UI.getCanvasWidth();
@@ -128,31 +127,39 @@ public class Arm
     public void directKinematic(double t1, double t2){
         theta1 = Math.toRadians(t1);
         theta2 = Math.toRadians(t2);
+        
         xj1 = XM1 + R*Math.cos(theta1);
         yj1 = YM1 + R*Math.sin(theta1);
         xj2 = XM2 + R*Math.cos(theta2);
         yj2 = YM2 + R*Math.sin(theta2);
+        
+        if (xj1 > xj2 || yj1 > YM1 || yj2 > YM2){fail("Broked"); return;}
+        
         // midpoint between joints
-        double  xa = (xj2-xj1)/2 ;
-        double  ya = (yj2-yj1)/2 ;
+        double  xa = xj1+(xj2-xj1)/2;
+        double  ya = yj1+(yj2-yj1)/2;
+        
         // distance between joints
-        double d = Math.sqrt( (xa*xa) + (ya*ya) );
-        //if (d<2*R){
-        valid_state = true;
+        double d = Math.sqrt(Math.pow(xj2-xj1,2) + Math.pow(yj2-yj1,2));
+        
+        if (d>2*R){fail("Broked"); return;}
+        
         // half distance between tool positions
         double  h = Math.sqrt( (R*R) - Math.pow((0.5*d),2) );
-        double alpha = Math.atan2(yj1-yj2,xj2-xj1);
+        double alpha = (yj1 < yj2) ? Math.atan((yj1-yj2)/Math.abs(xj2-xj1)): Math.atan((yj2-yj1)/Math.abs(xj2-xj1));
         
-        UI.println("ALPHA:"+alpha);
-        //tool position
+        // Valid Case
+        valid_state = true;
         xt = xa + h * Math.cos((Math.PI/2) - alpha);
-        yt = ya + h * Math.sin((Math.PI/2) - alpha);
-        UI.println(xt);
-        UI.println(yt);
+        yt = ya - h * Math.sin((Math.PI/2) - alpha);
         xt2 = xa - h*Math.cos(Math.PI/2 - alpha);
         yt2 = ya - h*Math.sin(Math.PI/2 - alpha); 
-        //} else {
-        //    valid_state = false;
+    }
+    
+    private void fail(String failMessage){
+        valid_state = false;
+        UI.clearText();
+        UI.println(failMessage);
     }
 
 
