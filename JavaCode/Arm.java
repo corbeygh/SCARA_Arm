@@ -20,6 +20,7 @@ public class Arm
     private final int YM2 = 374;
     private final double R = 154;  // length of the upper/fore arm
     private final double D = XM2-XM1;
+    private final double YMIN = YM1+(YM2-YM1)/2 - Math.sqrt(R*R - Math.pow(R-XM1+(XM2-XM1)/2,2)); 
     // parameters of servo motors - linear function pwm(angle)
     // each of two motors has unique function which should be measured
     // linear function cam be described by two points
@@ -176,13 +177,14 @@ public class Arm
         double h2 = Math.sqrt(Math.pow(R,2) - Math.pow(d2,2));
 
                 //Invalid Checks For Angles
-        if (d1*2>2*R || d2*2>2*R){
+        if (d1*2>2*R || d2*2>2*R || yt > YMIN){
             valid_state = false;
             if (d1*2>2*R && d2*2>2*R)fail("Motors Can't Reach");
             else if (d1>2*R)fail("Motor 1 Can't Reach");
             else if(d2>2*R)fail("Motor 2 Can't Reach");
+            else if (yt > YMIN) fail("Less than "+ Double.toString(YMIN));
             return;
-        } 
+        }
             
         
         
@@ -191,19 +193,20 @@ public class Arm
         double xa2 = xt + (XM2-xt)/2;
         double ya2 = yt + (YM2-yt)/2;
 
-        double alpha1 = Math.atan((YM1-yt)/(xt-XM1));
-        double alpha2 = Math.atan((YM2-yt)/(xt-XM2));
+        double alpha1 = Math.atan2((YM1-yt),(xt-XM1));
+        double alpha2 = Math.atan2((YM2-yt),(xt-XM2));
 
         xj1 = xa1 - h1*Math.cos(Math.PI/2-alpha1);
         yj1 = ya1 - h1*Math.sin(Math.PI/2-alpha1);
         xj12 = xa1 + h1*Math.cos(Math.PI/2-alpha1);
         yj12 = ya1 + h1*Math.sin(Math.PI/2-alpha1);
 
-        xj2 = xa2 - h2*Math.cos(Math.PI/2-alpha2);
-        yj2 = ya2 - h2*Math.sin(Math.PI/2-alpha2);
-        xj22 = xa2 + h2*Math.cos(Math.PI/2-alpha2);
-        yj22 = ya2 + h2*Math.sin(Math.PI/2-alpha2);
-
+        
+        xj2 = xa2 + h2*Math.cos(Math.PI/2-alpha2);
+        yj2 = ya2 + h2*Math.sin(Math.PI/2-alpha2);
+        xj22 = xa2 - h2*Math.cos(Math.PI/2-alpha2);
+        yj22 = ya2 - h2*Math.sin(Math.PI/2-alpha2);
+        
         if (xj1 == XM1){
             theta1 = 90;
         } else {
