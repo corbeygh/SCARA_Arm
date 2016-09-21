@@ -15,7 +15,7 @@ pwm1      theta1
 1450      -119
 1460      -120
 
-pwm1 = -10*theta1 + 100
+pwm1 = -10.074982*theta1 + 241.633131
 
 MOTOR 2 CALIBRATION
 pwm2      theta2
@@ -26,4 +26,4 @@ pwm2      theta2
 1380      -46
 1390      -50
 
-pwm2 = -10*theta2 + 840
+pwm2 = -9.6437354*theta2 + 920.702246
