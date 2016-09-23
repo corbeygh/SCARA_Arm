@@ -9,18 +9,22 @@
 import ecs100.UI;
 import java.awt.Color;
 import java.util.*;
+import java.io.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 
 public class Arm
 {
 
     // fixed arm parameters
-    private final int XM1 = 287;  // coordinates of the motor(measured in pixels of the picture)
-    private final int YM1 = 374;
-    private final int XM2 = 377;
-    private final int YM2 = 374;
-    private final double R = 154;  // length of the upper/fore arm
-    private final double D = XM2-XM1;
-    private final double YMIN = YM1+(YM2-YM1)/2 - Math.sqrt(R*R - Math.pow(R-XM1+(XM2-XM1)/2,2)); 
+    public static final int XM1 = 287;  // coordinates of the motor(measured in pixels of the picture)
+    public static final int YM1 = 374;
+    public static final int XM2 = 377;
+    public static final int YM2 = 374;
+    public static final double R = 154;  // length of the upper/fore arm
+    public static final double D = XM2-XM1;
+    public static final double YMIN = YM1+(YM2-YM1)/2 - Math.sqrt(R*R - Math.pow(R-XM1+(XM2-XM1)/2,2));
+    public static final double YMAX = YMIN - (Math.sqrt(3*R*R) - YM2 + YMIN);
     // parameters of servo motors - linear function pwm(angle)
     // each of two motors has unique function which should be measured
     // linear function cam be described by two points
@@ -58,6 +62,8 @@ public class Arm
     private double yt2;
 
     private boolean valid_state; // is state of the arm physically possible?
+    
+    private boolean[][] photo;
 
     /**
      * Constructor for objects of class Arm
@@ -67,6 +73,31 @@ public class Arm
         theta1 = -90.0*Math.PI/180.0; // initial angles of the upper arms
         theta2 = -90.0*Math.PI/180.0;
         valid_state = false;
+    }
+    
+    public void loadPhoto(String filename) {
+        try {
+            BufferedImage img = ImageIO.read(new File(filename));
+            int rows = img.getHeight();
+            int cols = img.getWidth();
+            photo = new boolean[rows][cols];
+            for (int row = 0; row < rows; row++){
+                for (int col = 0; col < cols; col++){
+                  photo[row][col] = img.getRGB(col, row)<-200000;
+                    //photo[row][col];
+                }
+            }
+            UI.printMessage("Loaded "+ filename);
+            processPhoto();
+        } catch(IOException e){UI.printf("/nImage reading failed: %s/n",e);}
+    }
+    
+    private void processPhoto(){
+        
+    }
+    
+    public boolean[][] getPhoto(){
+        return photo;
     }
 
     // draws arm on the canvas
@@ -94,7 +125,7 @@ public class Arm
         UI.drawString(out_str, XM1-2*mr,YM1-mr/2+3*mr);
         out_str=String.format("YM1=%d",YM1);
         UI.drawString(out_str, XM1-2*mr,YM1-mr/2+4*mr);
-        UI.drawString("PWM1="+Double.toString(-10*theta1 + 100), XM1-2*mr,YM1-mr/2+5*mr);
+        UI.drawString("PWM1="+Double.toString(-10.074982*theta1 + 241.633131), XM1-2*mr,YM1-mr/2+5*mr);
         // ditto for second motor
         out_str = String.format("t2=%3.1f",theta2);
         UI.drawString(out_str, XM2+2*mr,YM2-mr/2+2*mr);
@@ -102,10 +133,12 @@ public class Arm
         UI.drawString(out_str, XM2+2*mr,YM2-mr/2+3*mr);
         out_str=String.format("YM2=%d",YM2);
         UI.drawString(out_str, XM2+2*mr,YM2-mr/2+4*mr);
-        UI.drawString("PWM2="+Double.toString(-10*theta2 + 840), XM2+2*mr,YM2-mr/2+5*mr);
+        UI.drawString("PWM2="+Double.toString(-9.6437354*theta2 + 920.702246), XM2+2*mr,YM2-mr/2+5*mr);
         // draw Field Of View
         UI.setColor(Color.GRAY);
         UI.drawRect(0,0,640,480);
+        //UI.drawRect(XM1+D/2-R/2,YMAX,R,(YMAX-YMIN)*-1);
+        //UI.println(Double.toString(R) + " BY " + Double.toString((YMAX-YMIN)*-1));
 
         // it can b euncommented later when
         // kinematic equations are derived
@@ -182,7 +215,7 @@ public class Arm
             if (d1*2>2*R && d2*2>2*R)fail("Motors Can't Reach");
             else if (d1>2*R)fail("Motor 1 Can't Reach");
             else if(d2>2*R)fail("Motor 2 Can't Reach");
-            else if (yt > YMIN) fail("Less than "+ Double.toString(YMIN));
+            else if (yt > YMIN) fail("Less than YMIN");
             return;
         }
             
@@ -248,14 +281,13 @@ public class Arm
     // for motor to be in position(angle) theta1
     // linear intepolation
     public int get_pwm1(){
-        int pwm = 0;
-        return pwm;
+        double pwm = -10.074982*theta1 + 241.633131;
+        return (int)pwm;
     }
     // ditto for motor 2
     public int get_pwm2(){
-        int pwm =0;
-        //pwm = (int)(pwm2_90 + (theta2 - 90)*pwm2_slope);
-        return pwm;
+        double pwm = (-9.6437354*theta2 + 920.702246);
+        return (int)pwm;
     }
 
 }
