@@ -44,8 +44,6 @@ public class Drawing
     {
         PointXY new_point = new PointXY(x,y,pen);
         path.add(new_point);
-        UI.printf("Pioint added.x=%f y=%f pen=%b New path size - %d\n",
-                x,y,pen,path.size());
     }
 
     public void print_path(){
@@ -55,7 +53,7 @@ public class Drawing
             double x0 = path.get(i).get_x();
             double y0 = path.get(i).get_y();
             boolean p = path.get(i).get_pen();
-            UI.printf("i=%d x=%f y=%f pen=%b\n",i,x0,y0,p);
+            //UI.printf("i=%d x=%f y=%f pen=%b\n",i,x0,y0,p);
         }
         UI.printf("*************************\n");
     }
@@ -68,11 +66,13 @@ public class Drawing
             if (path.get(i).get_pen()){
                 UI.setColor(Color.BLUE); //pen down part
             } else {
-                UI.setColor(Color.LIGHT_GRAY); // pen uo
+                continue;
+                //UI.setColor(Color.LIGHT_GRAY); // pen uo
             }
+            UI.setLineWidth(0.1f);
             UI.drawLine(p0.get_x(), p0.get_y(), p1.get_x(), p1.get_y());
-
         }
+        UI.println(path.size());
     }
 
     public int get_path_size(){
@@ -134,7 +134,6 @@ public class Drawing
                 add_point_to_path(x,y,pen);
             }
         }catch(Exception e){
-
             e.printStackTrace();
         }
 
