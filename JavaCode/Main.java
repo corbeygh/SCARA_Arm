@@ -1,5 +1,4 @@
 
-
 /* Code for Assignment ??
  * Name:
  * Usercode:
@@ -10,7 +9,7 @@ import ecs100.*;
 import java.util.*;
 import java.io.*;
 import java.awt.*;
-
+import javax.swing.SwingUtilities;
 
 /** <description of class Main>
  */
@@ -18,7 +17,7 @@ public class Main{
 
     private Arm arm;
     private Drawing drawing;
-    private ToolPath tool_path;
+    private ToolPath tool_path = new ToolPath();
     // state of the GUI
     private int state; // 0 - nothing
     // 1 - inverse point kinematics - point
@@ -34,14 +33,14 @@ public class Main{
         UI.addButton("Load path XY", this::load_xy);
         UI.addButton("Save path Ang", this::save_ang);
         UI.addButton("Load path Ang:Play", this::load_ang);
+        UI.addButton("Load Photo", this::load_photo);
+        UI.addButton("Draw", ()->drawing.draw());
 
         // UI.addButton("Quit", UI::quit);
         UI.setMouseMotionListener(this::doMouse);
         UI.setKeyListener(this::doKeys);
 
-
         //ServerSocket serverSocket = new ServerSocket(22);
-
         this.arm = new Arm();
         this.drawing = new Drawing();
         this.run();
@@ -58,7 +57,6 @@ public class Main{
         }
 
     }
-
 
     public void doMouse(String action, double x, double y) {
         //UI.printf("Mouse Click:%s, state:%d  x:%3.1f  y:%3.1f\n",
@@ -104,7 +102,6 @@ public class Main{
             drawing.print_path();
         }
 
-
         if (   (state == 3) &&(action.equals("clicked"))){
             // add point and draw
             //UI.printf("Adding point x=%f y=%f\n",x,y);
@@ -117,9 +114,7 @@ public class Main{
             state = 2;
         }
 
-
     }
-
 
     public void save_xy(){
         state = 0;
@@ -147,14 +142,42 @@ public class Main{
 
     // save angles into the file
     public void save_ang(){
-        String fname = UIFileChooser.open();
+        String fname = UIFileChooser.save();
         tool_path.convert_drawing_to_angles(drawing,arm,fname);
+        tool_path.convert_angles_to_pwm(arm);
+        tool_path.save_pwm_file(fname);
     }
-
 
     public void load_ang(){
-
     }
+
+    public void load_photo(){
+        String fname = UIFileChooser.open();
+        arm.loadPhoto(fname);
+        boolean[][] photo = arm.getPhoto();
+        boolean bDraw = false;
+
+        for (int y = 0; y < photo.length; y++){
+            //drawing.add_point_to_path(0+Arm.XM1+Arm.D/2-Arm.R/2,0+Arm.YMAX,false);
+            for (int x = 0; x < photo[y].length; x++){
+                if (photo[y][x]){
+                    if (!bDraw){
+                        drawing.add_point_to_path(x+Arm.XM1+Arm.D/2-Arm.R/2,y+Arm.YMAX,false);
+                        bDraw = true;
+                    }
+                    drawing.add_point_to_path(x+Arm.XM1+Arm.D/2-Arm.R/2,y+Arm.YMAX,true);
+                } else {
+                    if (bDraw){
+                        bDraw = false;
+                        drawing.add_point_to_path(x-1+Arm.XM1+Arm.D/2-Arm.R/2,y-1+Arm.YMAX,false);
+                    }
+                }
+            }
+            //drawing.add_point_to_path(photo[y].length-1+Arm.XM1+Arm.D/2-Arm.R/2,y+Arm.YMAX,false);
+        }
+    }
+
+    //     UI.drawRect(XM1+D/2-R/2,YMAX,R,(YMAX-YMIN)*-1);
 
     public void run() {
         while(true) {
