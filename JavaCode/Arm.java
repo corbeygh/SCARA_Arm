@@ -278,16 +278,16 @@ public class Arm
     // for motor to be in position(angle) theta1
     // linear intepolation
     public int get_pwm1(){
-        //         double pwm = -11.226688*theta1 + 504.736842;
+        //double pwm = -11.226688*theta1 + 504.736842;
 
-        double pwm = -11*theta1 + 400;
+        double pwm = -10*theta1 + 200;
 
         return (int)pwm;
     }
     // ditto for motor 2
     public int get_pwm2(){
         //double pwm = -10.313073*theta2 + 708.347805;
-        double pwm = -10.313073*theta2 + 600;
+        double pwm = -10*theta2 + 1000;
 
         return (int)pwm;
     }
