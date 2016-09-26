@@ -62,7 +62,7 @@ public class Arm
     private double yt2;
 
     private boolean valid_state; // is state of the arm physically possible?
-    
+
     private boolean[][] photo;
 
     /**
@@ -74,7 +74,7 @@ public class Arm
         theta2 = -90.0*Math.PI/180.0;
         valid_state = false;
     }
-    
+
     public void loadPhoto(String filename) {
         try {
             BufferedImage img = ImageIO.read(new File(filename));
@@ -83,19 +83,18 @@ public class Arm
             photo = new boolean[rows][cols];
             for (int row = 0; row < rows; row++){
                 for (int col = 0; col < cols; col++){
-                  photo[row][col] = img.getRGB(col, row)<-200000;
-                    //photo[row][col];
+                    photo[row][col] = img.getRGB(col, row)<-200000;
                 }
             }
             UI.printMessage("Loaded "+ filename);
             processPhoto();
         } catch(IOException e){UI.printf("/nImage reading failed: %s/n",e);}
     }
-    
+
     private void processPhoto(){
-        
+
     }
-    
+
     public boolean[][] getPhoto(){
         return photo;
     }
@@ -125,7 +124,7 @@ public class Arm
         UI.drawString(out_str, XM1-2*mr,YM1-mr/2+3*mr);
         out_str=String.format("YM1=%d",YM1);
         UI.drawString(out_str, XM1-2*mr,YM1-mr/2+4*mr);
-        UI.drawString("PWM1="+Double.toString(-10.074982*theta1 + 241.633131), XM1-2*mr,YM1-mr/2+5*mr);
+        UI.drawString("PWM1="+Double.toString(get_pwm1()), XM1-2*mr,YM1-mr/2+5*mr);
         // ditto for second motor
         out_str = String.format("t2=%3.1f",theta2);
         UI.drawString(out_str, XM2+2*mr,YM2-mr/2+2*mr);
@@ -133,11 +132,11 @@ public class Arm
         UI.drawString(out_str, XM2+2*mr,YM2-mr/2+3*mr);
         out_str=String.format("YM2=%d",YM2);
         UI.drawString(out_str, XM2+2*mr,YM2-mr/2+4*mr);
-        UI.drawString("PWM2="+Double.toString(-9.6437354*theta2 + 920.702246), XM2+2*mr,YM2-mr/2+5*mr);
+        UI.drawString("PWM2="+Double.toString(get_pwm2()), XM2+2*mr,YM2-mr/2+5*mr);
         // draw Field Of View
         UI.setColor(Color.GRAY);
         UI.drawRect(0,0,640,480);
-        //UI.drawRect(XM1+D/2-R/2,YMAX,R,(YMAX-YMIN)*-1);
+        UI.drawRect(XM1+D/2-R/2,YMAX,R,(YMAX-YMIN)*-1);
         //UI.println(Double.toString(R) + " BY " + Double.toString((YMAX-YMIN)*-1));
 
         // it can b euncommented later when
@@ -209,7 +208,7 @@ public class Arm
         double h1 = Math.sqrt(Math.pow(R,2) - Math.pow(d1,2));
         double h2 = Math.sqrt(Math.pow(R,2) - Math.pow(d2,2));
 
-                //Invalid Checks For Angles
+        //Invalid Checks For Angles
         if (d1*2>2*R || d2*2>2*R || yt > YMIN){
             valid_state = false;
             if (d1*2>2*R && d2*2>2*R)fail("Motors Can't Reach");
@@ -218,8 +217,7 @@ public class Arm
             else if (yt > YMIN) fail("Less than YMIN");
             return;
         }
-            
-        
+
         
         double xa1 = XM1 + (xt-XM1)/2;
         double ya1 = YM1 + (yt-YM1)/2;
@@ -234,12 +232,11 @@ public class Arm
         xj12 = xa1 + h1*Math.cos(Math.PI/2-alpha1);
         yj12 = ya1 + h1*Math.sin(Math.PI/2-alpha1);
 
-        
         xj2 = xa2 + h2*Math.cos(Math.PI/2-alpha2);
         yj2 = ya2 + h2*Math.sin(Math.PI/2-alpha2);
         xj22 = xa2 - h2*Math.cos(Math.PI/2-alpha2);
         yj22 = ya2 - h2*Math.sin(Math.PI/2-alpha2);
-        
+
         if (xj1 == XM1){
             theta1 = 90;
         } else {
@@ -250,7 +247,7 @@ public class Arm
         } else {
             theta2 = (xj2 < XM2) ? -180+(Math.toDegrees(Math.asin((YM2-yj2)/R))) : -Math.toDegrees(Math.asin((YM2-yj2)/R));
         }
-        
+
         if ((theta1 > 0)||(theta1 < -180) || Double.isNaN(theta1)){
             valid_state = false;
             fail("Angle 1 - invalid");
@@ -281,12 +278,17 @@ public class Arm
     // for motor to be in position(angle) theta1
     // linear intepolation
     public int get_pwm1(){
-        double pwm = -10.074982*theta1 + 241.633131;
+        //         double pwm = -11.226688*theta1 + 504.736842;
+
+        double pwm = -11*theta1 + 400;
+
         return (int)pwm;
     }
     // ditto for motor 2
     public int get_pwm2(){
-        double pwm = (-9.6437354*theta2 + 920.702246);
+        //double pwm = -10.313073*theta2 + 708.347805;
+        double pwm = -10.313073*theta2 + 600;
+
         return (int)pwm;
     }
 
