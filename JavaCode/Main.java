@@ -20,6 +20,7 @@ public class Main{
     private ToolPath tool_path = new ToolPath();
     // state of the GUI
     private int state; // 0 - nothing
+    String host;
     // 1 - inverse point kinematics - point
     // 2 - enter path. Each click adds point
     // 3 - enter path pause. Click does not add the point to the path
@@ -36,6 +37,8 @@ public class Main{
         UI.addButton("Load Bulky", this::load_photo);
         UI.addButton("Load Path", this::load_photo_path);
         UI.addButton("Draw", ()->drawing.draw());
+        UI.addButton("Send Paths", this::send);
+
 
         // UI.addButton("Quit", UI::quit);
         UI.setMouseMotionListener(this::doMouse);
@@ -92,7 +95,7 @@ public class Main{
         }
 
         // add point
-        if (   (state == 2) &&(action.equals("clicked"))){
+        if ((state == 2) &&(action.equals("clicked"))){
             // add point(pen down) and draw
             UI.printf("Adding point x=%f y=%f\n",x,y);
             drawing.add_point_to_path(x,y,true); // add point with pen down
@@ -103,7 +106,7 @@ public class Main{
             drawing.print_path();
         }
 
-        if (   (state == 3) &&(action.equals("clicked"))){
+        if ((state == 3) &&(action.equals("clicked"))){
             // add point and draw
             //UI.printf("Adding point x=%f y=%f\n",x,y);
             drawing.add_point_to_path(x,y,false); // add point wit pen up
@@ -272,6 +275,15 @@ public class Main{
         }
     }
 
+    public void send(){
+        String fname = UIFileChooser.open();
+        if (host == null) host = UI.askString("What is the IP: ");
+        try {
+            File file = new File(fname);
+            Runtime.getRuntime().exec("pscp -l pi -pw pi"+fname+" pi@"+host+":/home/pi/Arm");
+        } catch(IOException e){UI.printf("/nImage reading failed: %s/n",e);}
+
+    }
     public static void main(String[] args){
         Main obj = new Main();
     }
