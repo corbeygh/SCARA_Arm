@@ -33,7 +33,8 @@ public class Main{
         UI.addButton("Load path XY", this::load_xy);
         UI.addButton("Save path Ang", this::save_ang);
         UI.addButton("Load path Ang:Play", this::load_ang);
-        UI.addButton("Load Photo", this::load_photo);
+        UI.addButton("Load Bulky", this::load_photo);
+        UI.addButton("Load Path", this::load_photo_path);
         UI.addButton("Draw", ()->drawing.draw());
 
         // UI.addButton("Quit", UI::quit);
@@ -156,25 +157,110 @@ public class Main{
         arm.loadPhoto(fname);
         boolean[][] photo = arm.getPhoto();
         boolean bDraw = false;
+        boolean left = true;
 
         for (int y = 0; y < photo.length; y++){
             //drawing.add_point_to_path(0+Arm.XM1+Arm.D/2-Arm.R/2,0+Arm.YMAX,false);
-            for (int x = 0; x < photo[y].length; x++){
-                if (photo[y][x]){
-                    if (!bDraw){
-                        drawing.add_point_to_path(x+Arm.XM1+Arm.D/2-Arm.R/2,y+Arm.YMAX,false);
-                        bDraw = true;
+            if (left){
+                for (int x = 0; x < photo[y].length; x++){
+                    if (photo[y][x]){
+                        if (!bDraw){
+                            drawing.add_point_to_path(x+Arm.XM1+Arm.D/2-Arm.R/2,y+Arm.YMAX,false);
+                            bDraw = true;
+                        }
+                        drawing.add_point_to_path(x+Arm.XM1+Arm.D/2-Arm.R/2,y+Arm.YMAX,true);
+                    } else {
+                        if (bDraw){
+                            bDraw = false;
+                            drawing.add_point_to_path(x-1+Arm.XM1+Arm.D/2-Arm.R/2,y-1+Arm.YMAX,false);
+                        }
                     }
-                    drawing.add_point_to_path(x+Arm.XM1+Arm.D/2-Arm.R/2,y+Arm.YMAX,true);
-                } else {
-                    if (bDraw){
-                        bDraw = false;
-                        drawing.add_point_to_path(x-1+Arm.XM1+Arm.D/2-Arm.R/2,y-1+Arm.YMAX,false);
+                }
+            } else {
+                for (int x = photo[y].length-1; x >= 0; x--){
+                    if (photo[y][x]){
+                        if (!bDraw){
+                            drawing.add_point_to_path(x+Arm.XM1+Arm.D/2-Arm.R/2,y+Arm.YMAX,false);
+                            bDraw = true;
+                        }
+                        drawing.add_point_to_path(x+Arm.XM1+Arm.D/2-Arm.R/2,y+Arm.YMAX,true);
+                    } else {
+                        if (bDraw){
+                            bDraw = false;
+                            drawing.add_point_to_path(x-1+Arm.XM1+Arm.D/2-Arm.R/2,y-1+Arm.YMAX,false);
+                        }
                     }
                 }
             }
-            //drawing.add_point_to_path(photo[y].length-1+Arm.XM1+Arm.D/2-Arm.R/2,y+Arm.YMAX,false);
+            left = !left;
         }
+    }
+
+    public void load_photo_path(){
+        String fname = UIFileChooser.open();
+        arm.loadPhoto(fname);
+        boolean[][] photo = arm.getPhoto();
+        int x = 1;
+        int y = 1;
+        for (y = 0; y < photo.length; y++){
+            for (x = 0; x < photo[y].length; x++){
+                if (photo[y][x])break;
+            }
+            if (x != photo[y].length){
+                if (photo[y][x])break;
+            }
+        }
+
+        while (checkPhoto(photo)){
+            boolean start = true;
+            while(photo[y][x]){
+                if (photo[y][x]){
+                    if (start){
+                        start = false;
+                        drawing.add_point_to_path(x+Arm.XM1+Arm.D/2-Arm.R/2,y+Arm.YMAX,false);
+                    }
+                    drawing.add_point_to_path(x+Arm.XM1+Arm.D/2-Arm.R/2,y+Arm.YMAX,true);
+                }
+                photo[y][x] = false;
+
+                if (photo[y][x+1]){x += 1; continue;}
+                if (photo[y+1][x]){y += 1; continue;}
+                if (photo[y][x-1]){x -= 1; continue;}
+                if (photo[y-1][x]){y -= 1; continue;}
+
+                if (photo[y+1][x+1]){x += 1; y += 1; continue;}
+                if (photo[y+1][x-1]){x -= 1; y += 1; continue;}
+                if (photo[y-1][x+1]){y -= 1; x += 1; continue;}
+                if (photo[y-1][x-1]){y -= 1; x -= 1; continue;}
+            }
+            drawing.add_point_to_path(x+Arm.XM1+Arm.D/2-Arm.R/2,y+Arm.YMAX,false);
+
+            boolean found = false;
+            for (int row = 0; row < photo.length; row++){
+                for (int col = 0; col < photo[row].length; col++){
+                    if (photo[row][col]){
+                        x = col;
+                        y = row;
+                        found = true;
+                        break;
+                    }
+                }
+                if (found){
+                    found = false;
+                    break;
+                }
+            }
+        }
+        drawing.add_point_to_path(x+Arm.XM1+Arm.D/2-Arm.R/2,y+Arm.YMAX,false);
+    }
+
+    private boolean checkPhoto(boolean[][] photo){
+        for (int y = 0; y < photo.length; y++){
+            for (int x = 0; x < photo[y].length; x++){
+                if (photo[y][x])return true;
+            }
+        }
+        return false;
     }
 
     //     UI.drawRect(XM1+D/2-R/2,YMAX,R,(YMAX-YMIN)*-1);
