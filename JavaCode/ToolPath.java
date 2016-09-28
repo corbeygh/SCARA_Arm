@@ -34,12 +34,12 @@ public class ToolPath
     {
         // initialise instance variables
         n_steps = 1;
-        theta1_vector = new ArrayList<Double>();
-        theta2_vector = new ArrayList<Double>();
-        pen_vector = new ArrayList<Integer>();
-        pwm1_vector = new ArrayList<Integer>();
-        pwm2_vector = new ArrayList<Integer>();
-        pwm3_vector = new ArrayList<Integer>();
+        theta1_vector = new ArrayList<>();
+        theta2_vector = new ArrayList<>();
+        pen_vector = new ArrayList<>();
+        pwm1_vector = new ArrayList<>();
+        pwm2_vector = new ArrayList<>();
+        pwm3_vector = new ArrayList<>();
 
     }
 
@@ -53,7 +53,7 @@ public class ToolPath
             p0 = drawing.get_drawing_point(i);
             p1 = drawing.get_drawing_point(i+1);
             
-            n_steps = (p0.get_pen()) ? n_steps = 1 : (int)(Math.hypot(p1.get_x()-p0.get_x(),p1.get_y()-p0.get_y()))/4+1;
+            n_steps = (p0.get_pen()) ? 1 : (int)(Math.hypot(p1.get_x()-p0.get_x(),p1.get_y()-p0.get_y()))/4+1;
 
             // break line between points into segments: n_steps of them
             for ( int j = 0 ; j< n_steps;j++) { // break segment into n_steps str. lines

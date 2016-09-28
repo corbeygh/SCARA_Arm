@@ -218,7 +218,6 @@ public class Arm
             return;
         }
 
-        
         double xa1 = XM1 + (xt-XM1)/2;
         double ya1 = YM1 + (yt-YM1)/2;
         double xa2 = xt + (XM2-xt)/2;
@@ -279,15 +278,16 @@ public class Arm
     // linear intepolation
     public int get_pwm1(){
         //double pwm = -11.226688*theta1 + 504.736842;
-
-        double pwm = -10*theta1 + 200;
+        double pwm = -10.074982*theta1 + 241.633131;
+        //double pwm = -10*theta1 + 200;
 
         return (int)pwm;
     }
     // ditto for motor 2
     public int get_pwm2(){
         //double pwm = -10.313073*theta2 + 708.347805;
-        double pwm = -10*theta2 + 1000;
+        //double pwm = -10*theta2 + 1000;
+        double pwm = -9.6437354*theta2 + 920.702246;
 
         return (int)pwm;
     }

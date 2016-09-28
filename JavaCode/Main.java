@@ -20,7 +20,7 @@ public class Main{
     private ToolPath tool_path = new ToolPath();
     // state of the GUI
     private int state; // 0 - nothing
-    String host;
+    String host;// = "10.140.163.125";
     // 1 - inverse point kinematics - point
     // 2 - enter path. Each click adds point
     // 3 - enter path pause. Click does not add the point to the path
@@ -277,13 +277,19 @@ public class Main{
 
     public void send(){
         String fname = UIFileChooser.open();
-        if (host == null) host = UI.askString("What is the IP: ");
+        String name = fname.replace("D:\\Work\\2016\\UNIVERSITY\\TRI 2\\ENGR110\\SCARA Project\\SCARA_Arm-master\\JavaCode\\", "");
+        String s;
+        if (host == null)host = UI.askString("What is IP: ");
+        UI.println("pscp -v -pw pi " + fname + " pi@" + host + ":Arm/" + name);
         try {
-            File file = new File(fname);
-            Runtime.getRuntime().exec("pscp -l pi -pw pi"+fname+" pi@"+host+":/home/pi/Arm");
-        } catch(IOException e){UI.printf("/nImage reading failed: %s/n",e);}
-
-    }
+            Process pr = Runtime.getRuntime().exec("pscp -v -pw pi " + name + " pi@" + host + ":Arm/" + name);
+            BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+            while((s = in.readLine())!= null) {
+                UI.println(s);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }}
     public static void main(String[] args){
         Main obj = new Main();
     }
