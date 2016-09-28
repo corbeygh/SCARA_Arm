@@ -8,28 +8,30 @@ Implement kinematic equations for arm in Java model of arm
 10% COMPLETED (100%)
 
 Estimate reach zone for given arm dimensions and motor positions (a rectangular approximation will be sufficient to start with)
-5% COMPLETED (unsure)
+5% COMPLETED (100%)
 
 Draw a straight horizontal line across the page (You will be assessed on how straight the line is)
-10% COMPLETED (95%)
+10% COMPLETED (100%)
 
 Draw a square with sides 40mm in length (You will be assessed on how close the start and end points are)
-10% COMPLETED (95%)
+10% COMPLETED (100%)
 
 Draw a circle with a diameter of 50mm (You will be assessed on how smooth the curve is)
-10% COMPLETED (95%)
+10% COMPLETED (100%)
  
 Implement checks in code that avoids singularity locations
-10% COMPLETED(undsure)
+10% COMPLETED(100%)
 
 Implement a button in the Java GUI that transfers a text file to the arm
-5% (ONGOING)
+5% COMPLETED(100%)
 
 Write the word - Skynet - using the arm
-10% COMPLETED(95%)
+10% COMPLETED(100%)
 
 Draw the unicode snowman.
-10 % COMPLETED(90%)
+10 % COMPLETED(100%)
 
 Draw a picture of Elf as found on assignment web-page.
-10 % COMPLETED(unsure)
+10 % COMPLETED(100%)
+
+FINISHED :)
